@@ -1,22 +1,28 @@
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import axios from 'axios';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { useNavigate } from 'react-router-dom';
+import api from '@/axios/api';
+import { ACCESS_TOKEN, REFRESH_TOKEN } from '@/utils/constants/constants';
+import { toast } from 'sonner';
+import useAuth from './hooks/useAuth';
 
 // Define Zod schema for form validation
 const loginSchema = z.object({
   username: z.string()
-    .min(3, { message: 'Username must be at least 3 characters' })
-    .nonempty({ message: 'Username is required' }),
+    .nonempty({ message: 'Username is required' })
+    .min(4, { message: 'Username must be at least 4 characters' })
+    .regex(/^[a-zA-Z0-9]+$/, "Only letters and numbers allowed"),
+    
   password: z.string()
-    .min(8, { message: 'Password must be at least 8 characters' })
     .nonempty({ message: 'Password is required' })
+    .min(6, { message: 'Password must be at least 6 characters' })
+    
 });
 
 const Login = () => {
@@ -29,16 +35,19 @@ const Login = () => {
   });
   const [apiError, setApiError] = useState(null);
   const navigate = useNavigate();
+  const {login} = useAuth()
 
   const onSubmit = async (data) => {
     try {
-      const response = await axios.post('http://localhost:8000/api/token/', data);
-      localStorage.setItem('access_token', response.data.access);
-      localStorage.setItem('refresh_token', response.data.refresh);
+      const response = await api.post('/api/token/', data);
+      const { access, refresh, user } = response.data;
+      login(user,access,refresh)
       setApiError(null);
-      navigate('/dashboard'); // Redirect to dashboard or rooms page
+      navigate('/dashboard'); 
+      toast.success("login succesful")
     } catch (error) {
       setApiError(error.response?.data?.detail || 'Login failed. Please check your credentials.');
+      toast.error("login failed")
     }
   };
 

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -43,6 +43,9 @@ const userRegisterSchema = z.object({
 });
 
 const Register = () => {
+
+  const [loading, setLoading] = useState(false)
+
   const form = useForm({
     resolver: zodResolver(userRegisterSchema),
     defaultValues: {
@@ -57,7 +60,8 @@ const Register = () => {
   const navigate = useNavigate()
 
   const onSubmit = async (values) => {
-    console.log(values)
+    setLoading(true)
+
     try{
       const response = await api.post('/api/register/',values)
       navigate('/login')
@@ -86,6 +90,9 @@ const Register = () => {
           "Registration failed.";
         toast.error(message);
       }
+    } finally {
+
+      setLoading(false)
     }
  
   };
@@ -121,8 +128,8 @@ const Register = () => {
                   )}
                 />
               ))}
-              <Button type="submit" className="w-full">
-                Register
+              <Button type="submit" className="w-full" disabled={loading} >
+               {loading ? "Registering" : "Register"}
               </Button>
             </form>
           </Form>
