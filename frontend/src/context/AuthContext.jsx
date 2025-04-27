@@ -15,7 +15,7 @@ const initialState = {
         case "LOGIN":
             return {
                 user : action.payload.user,
-                accessToken : action.payload.token,
+                accessToken : action.payload.access,
                 isAuthenticated : true
             };
         case "LOGOUT":
@@ -55,7 +55,7 @@ export const AuthProvider = ({children}) => {
 
         dispatch({
             type : "LOGIN",
-            payload : {user, token}
+            payload : {user, access}
         })
     }
 

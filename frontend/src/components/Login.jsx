@@ -46,7 +46,8 @@ const Login = () => {
       navigate('/dashboard'); 
       toast.success("login succesful")
     } catch (error) {
-      setApiError(error.response?.data?.detail || 'Login failed. Please check your credentials.');
+      console.log(error)
+      setApiError(error.response?.data?.detail || 'Login failed.');
       toast.error("login failed")
     }
   };

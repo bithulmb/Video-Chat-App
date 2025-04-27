@@ -1,11 +1,15 @@
+import Dashboard from '@/components/Dashboard'
 import React from 'react'
 
 const HomePage = () => {
   return (
     <div>
-      HomePage
+      <Dashboard/>
     </div>
   )
 }
 
 export default HomePage
+
+
+

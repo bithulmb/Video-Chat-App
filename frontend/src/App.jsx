@@ -9,6 +9,8 @@ import { Toaster } from "./components/ui/sonner";
 import { AuthProvider } from "./context/AuthContext";
 import PublicRoute from "./routes/PublicRoute";
 import ProtectedRoute from "./routes/ProtectedRoute";
+import DashboardPage from "./pages/DashboardPage";
+import RoomPage from "./pages/RoomPage";
 
 function App() {
   return (
@@ -22,7 +24,8 @@ function App() {
             </Route>
 
             <Route element={<ProtectedRoute />}>
-              <Route path="/dashboard" element={<HomePage />} />
+              <Route path="/dashboard" element={<DashboardPage />} />
+              <Route path="/rooms/:roomId" element={<RoomPage />} />
             </Route>
           </Routes>
         </BrowserRouter>
