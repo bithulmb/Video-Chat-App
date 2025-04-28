@@ -6,19 +6,23 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import api from "@/axios/api";
-import { ACCESS_TOKEN, WEB_SOCKET_URL, ZEGO_APP_ID } from "@/utils/constants/constants";
+import {
+  ACCESS_TOKEN,
+  WEB_SOCKET_URL,
+  ZEGO_APP_ID,
+} from "@/utils/constants/constants";
 import useAuth from "@/components/hooks/useAuth";
-import { format } from 'date-fns'
-
-
+import { format } from "date-fns";
+import Header from "@/components/Header";
+import { toast } from "sonner";
 
 const RoomPage = () => {
   const { roomId } = useParams();
   const navigate = useNavigate();
   const [room, setRoom] = useState(null);
   const [message, setMessage] = useState("");
-  const [messages, setMessages] = useState([]); 
-  const socketRef = useRef(null); 
+  const [messages, setMessages] = useState([]);
+  const socketRef = useRef(null);
   const [activeUsers, setActiveUsers] = useState(1);
 
   const { user } = useAuth();
@@ -68,13 +72,11 @@ const RoomPage = () => {
       const data = JSON.parse(event.data);
       console.log("Message received from server:", data);
 
-
-  if (data.type === "chat_message" && data.message) {
-    setMessages(prev => [...prev, data.message]);
-  } else if (data.type === "user_count") {
-    setActiveUsers(data.count);
-  }
-
+      if (data.type === "chat_message" && data.message) {
+        setMessages((prev) => [...prev, data.message]);
+      } else if (data.type === "user_count") {
+        setActiveUsers(data.count);
+      }
     };
 
     socketRef.current.onclose = () => {
@@ -88,6 +90,7 @@ const RoomPage = () => {
 
   const handleLeaveRoom = () => {
     navigate("/dashboard");
+    toast.success(`Left from the ${room.name}`)
   };
 
   const handleSendMessage = () => {
@@ -107,16 +110,16 @@ const RoomPage = () => {
 
   const chatContainerRef = useRef(null);
 
-useEffect(() => {
-  if (chatContainerRef.current) {
-    chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
-  }
-}, [messages]);
+  useEffect(() => {
+    if (chatContainerRef.current) {
+      chatContainerRef.current.scrollTop =
+        chatContainerRef.current.scrollHeight;
+    }
+  }, [messages]);
 
-const handleJoinVideoCall =  () => {
-  navigate(`/video/${roomId}`)
-};
-
+  const handleJoinVideoCall = () => {
+    navigate(`/video/${roomId}`);
+  };
 
   if (!room) {
     return (
@@ -128,28 +131,37 @@ const handleJoinVideoCall =  () => {
 
   return (
     <div className="flex flex-col h-screen">
+      <Header/>
       {/* Top Bar */}
       <div className="flex items-center justify-between px-6 py-4 border-b bg-muted">
-  <div>
-    <h1 className="text-xl font-semibold">{room.name}</h1>
-    <p className="text-sm text-muted-foreground">{activeUsers} user{activeUsers !== 1 ? 's' : ''} online</p>
-  </div>
-  <div className="flex items-center gap-2">
-    <Button variant="outline_default" onClick={handleJoinVideoCall}>
-      Join Video Call
-    </Button>
-    <Button variant="destructive" onClick={handleLeaveRoom}>
-      Leave Room
-    </Button>
-  </div>
-</div>
+        <div>
+          <h1 className="text-xl font-semibold">{room.name}</h1>
+          <p className="text-sm text-muted-foreground">
+            {activeUsers} user{activeUsers !== 1 ? "s" : ""} online
+          </p>
+        </div>
+        <div className="flex items-center gap-2">
+          <Button variant="outline_default" onClick={handleJoinVideoCall}>
+            Join Video Call
+          </Button>
+          <Button variant="destructive" onClick={handleLeaveRoom}>
+            Leave Room
+          </Button>
+        </div>
+      </div>
       {/* Chat Area */}
-
-      <div ref={chatContainerRef} className="flex-1 overflow-y-auto p-4 space-y-6 bg-background">
+      
+      <div
+        ref={chatContainerRef}
+        className="flex-1 overflow-y-auto p-4 space-y-6 bg-background"
+      >
         {messages.length > 0 ? (
           messages.map((msg, index) => {
-            const isOwnMessage = msg.username === user.username;          
-            const formattedTime = format(new Date(msg.timestamp), "dd/MM/yyyy hh:mm a") 
+            const isOwnMessage = msg.username === user.username;
+            const formattedTime = format(
+              new Date(msg.timestamp),
+              "dd/MM/yyyy hh:mm a"
+            );
 
             return (
               <div
@@ -158,18 +170,12 @@ const handleJoinVideoCall =  () => {
                   isOwnMessage ? "justify-end" : "justify-start"
                 }`}
               >
-                {!isOwnMessage && (
-                //   <Avatar className="w-16 h-16">
-                //   <AvatarImage src={msg.profileImageUrl} alt={msg.username} />
-                //   <AvatarFallback>
-                //     {msg.username?.charAt(0).toUpperCase()}
-                //   </AvatarFallback>
-                // </Avatar>
+                {!isOwnMessage && (               
                   <div className="flex-shrink-0">
                     <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center text-xl font-semibold text-muted-foreground">
                       {msg.username?.charAt(0).toUpperCase()}
-                     </div>
-                   </div>
+                    </div>
+                  </div>
                 )}
 
                 <div
@@ -225,8 +231,7 @@ const handleJoinVideoCall =  () => {
         />
         <Button onClick={handleSendMessage}>Send</Button>
       </div>
-      <div id="video-call-container" className="w-full h-[600px] mt-4"></div>
-
+     
     </div>
   );
 };

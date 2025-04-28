@@ -1,20 +1,17 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import api from "@/axios/api"; 
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import useAuth from "@/components/hooks/useAuth";
 import { toast } from "sonner";
 import Header from "@/components/Header";
 
 const DashboardPage = () => {
   const [rooms, setRooms] = useState([]);
   const [newRoomName, setNewRoomName] = useState("");
+  const [open, setOpen] = useState(false); // Dialog open/close
   const navigate = useNavigate();
-
-  const { user, logout } = useAuth()
 
   useEffect(() => {
     fetchRooms();
@@ -35,42 +32,55 @@ const DashboardPage = () => {
       const response = await api.post("/api/rooms/", { name: newRoomName });
       setNewRoomName("");
       fetchRooms(); 
+      setOpen(false); // Close the dialog
       navigate(`/rooms/${response.data.id}`); 
-      toast.success("Room created succesfully")
+      toast.success("Room created successfully");
     } catch (error) {
       console.error("Failed to create room:", error);
+      toast.error("Failed to create room");
     }
   };
 
   const handleJoinRoom = (room) => {
     navigate(`/rooms/${room.id}`);
-    toast.success(`${room.name} joined succesfully`)
+    toast.success(`Joined room: ${room.name}`);
   };
-
-
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-100 dark:bg-gray-900">
-
-     
-      <Header/>
-      
+      <Header />
 
       {/* Main Content */}
       <main className="flex-1 p-8">
         <div className="max-w-5xl mx-auto space-y-12">
 
-          {/* Create Room */}
-          <section>
-            <h2 className="text-3xl font-bold mb-4">Create a New Room</h2>
-            <div className="flex items-center space-x-4">
-              <Input
-                placeholder="Enter room name..."
-                value={newRoomName}
-                onChange={(e) => setNewRoomName(e.target.value)}
-              />
-              <Button onClick={handleCreateRoom}>Create Room</Button>
-            </div>
+          {/* Create Room Button */}
+          <section className="flex justify-end">
+            <Dialog open={open} onOpenChange={setOpen}>
+              <DialogTrigger asChild>
+                <Button>Create Room</Button>
+              </DialogTrigger>
+
+              <DialogContent className="sm:max-w-md">
+                <DialogHeader>
+                  <DialogTitle>Create a New Room</DialogTitle>
+                </DialogHeader>
+
+                <div className="mt-4 space-y-4">
+                  <Input
+                    placeholder="Enter room name..."
+                    value={newRoomName}
+                    onChange={(e) => setNewRoomName(e.target.value)}
+                  />
+                </div>
+
+                <DialogFooter className="mt-6">
+                  <Button type="button" onClick={handleCreateRoom}>
+                    Create
+                  </Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
           </section>
 
           {/* Available Rooms */}
