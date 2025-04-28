@@ -178,14 +178,14 @@ SIMPLE_JWT = {
     'TOKEN_OBTAIN_SERIALIZER': 'accounts.serializers.CustomTokenObtainPairSerializer',
 }
 
-
+REDIS_URL = os.getenv('REDIS_URL', 'redis://localhost:6379')
 
 # Using Redis for Channels
 CHANNEL_LAYERS = {
     "default": {
         "BACKEND": "channels_redis.core.RedisChannelLayer",
         "CONFIG": {
-            "hosts": [(os.getenv("REDIS_URL"), 6379)],
+            "hosts": [REDIS_URL],
         },
     },
 }
