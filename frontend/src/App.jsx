@@ -10,6 +10,7 @@ import ProtectedRoute from "./routes/ProtectedRoute";
 import DashboardPage from "./pages/DashboardPage";
 import RoomPage from "./pages/RoomPage";
 import VideoCallPage from "./pages/VideoCallPage";
+import NotFoundPage from "./pages/NotFoundPage";
 
 function App() {
   return (
@@ -18,6 +19,7 @@ function App() {
         <BrowserRouter>
           <Routes>
             <Route element={<PublicRoute />}>
+             <Route path="/" element={<LoginPage />} />
               <Route path="/login" element={<LoginPage />} />
               <Route path="/register" element={<RegisterPage />} />
             </Route>
@@ -27,6 +29,7 @@ function App() {
               <Route path="/rooms/:roomId" element={<RoomPage />} />
               <Route path="/video/:roomId" element={<VideoCallPage />} />
             </Route>
+            <Route path="*" element={<NotFoundPage/>}/>
           </Routes>
         </BrowserRouter>
       </AuthProvider>
