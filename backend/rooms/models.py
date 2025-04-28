@@ -1,11 +1,10 @@
 from django.db import models
 from django.contrib.auth import get_user_model
-
-User = get_user_model()
+from django.conf import settings
 
 class Room(models.Model):
     name = models.CharField(max_length=255, unique=True)
-    host = models.ForeignKey(User, on_delete=models.CASCADE, related_name="hosted_rooms")
+    host = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="hosted_rooms")
     
     created_at = models.DateTimeField(auto_now_add=True)
 
@@ -14,7 +13,7 @@ class Room(models.Model):
 
 class Message(models.Model):
     room = models.ForeignKey(Room, on_delete=models.CASCADE, related_name='messages')
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     content = models.TextField()
     timestamp = models.DateTimeField(auto_now_add=True)
     
