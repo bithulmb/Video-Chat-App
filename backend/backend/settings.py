@@ -185,3 +185,9 @@ CHANNEL_LAYERS = {
         },
     },
 }
+
+
+
+#zegocloud video call api integration credentials
+ZEGO_APP_ID=os.getenv("ZEGO_APP_ID")
+ZEGO_SERVER_SECRET=os.getenv("ZEGO_SERVER_SECRET")

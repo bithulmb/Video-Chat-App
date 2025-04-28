@@ -11,6 +11,7 @@ import PublicRoute from "./routes/PublicRoute";
 import ProtectedRoute from "./routes/ProtectedRoute";
 import DashboardPage from "./pages/DashboardPage";
 import RoomPage from "./pages/RoomPage";
+import VideoCallPage from "./pages/VideoCallPage";
 
 function App() {
   return (
@@ -26,6 +27,7 @@ function App() {
             <Route element={<ProtectedRoute />}>
               <Route path="/dashboard" element={<DashboardPage />} />
               <Route path="/rooms/:roomId" element={<RoomPage />} />
+              <Route path="/video/:roomId" element={<VideoCallPage />} />
             </Route>
           </Routes>
         </BrowserRouter>

@@ -6,10 +6,11 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import api from "@/axios/api";
-import { ACCESS_TOKEN, WEB_SOCKET_URL } from "@/utils/constants/constants";
+import { ACCESS_TOKEN, WEB_SOCKET_URL, ZEGO_APP_ID } from "@/utils/constants/constants";
 import useAuth from "@/components/hooks/useAuth";
 import { format } from 'date-fns'
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+
+
 
 const RoomPage = () => {
   const { roomId } = useParams();
@@ -74,10 +75,6 @@ const RoomPage = () => {
     setActiveUsers(data.count);
   }
 
-
-      // if (data.message) {
-      //   setMessages((prev) => [...prev, data.message]);
-      // }
     };
 
     socketRef.current.onclose = () => {
@@ -116,6 +113,11 @@ useEffect(() => {
   }
 }, [messages]);
 
+const handleJoinVideoCall =  () => {
+  navigate(`/video/${roomId}`)
+};
+
+
   if (!room) {
     return (
       <div className="flex justify-center items-center h-screen">
@@ -132,11 +134,15 @@ useEffect(() => {
     <h1 className="text-xl font-semibold">{room.name}</h1>
     <p className="text-sm text-muted-foreground">{activeUsers} user{activeUsers !== 1 ? 's' : ''} online</p>
   </div>
-  <Button variant="destructive" onClick={handleLeaveRoom}>
-    Leave Room
-  </Button>
+  <div className="flex items-center gap-2">
+    <Button variant="outline_default" onClick={handleJoinVideoCall}>
+      Join Video Call
+    </Button>
+    <Button variant="destructive" onClick={handleLeaveRoom}>
+      Leave Room
+    </Button>
+  </div>
 </div>
-
       {/* Chat Area */}
 
       <div ref={chatContainerRef} className="flex-1 overflow-y-auto p-4 space-y-6 bg-background">
@@ -219,6 +225,8 @@ useEffect(() => {
         />
         <Button onClick={handleSendMessage}>Send</Button>
       </div>
+      <div id="video-call-container" className="w-full h-[600px] mt-4"></div>
+
     </div>
   );
 };
