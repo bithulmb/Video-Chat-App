@@ -5,6 +5,9 @@ from django.conf import settings
 class Room(models.Model):
     name = models.CharField(max_length=255, unique=True)
     host = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="hosted_rooms")
+    description = models.TextField(blank=True, null=True)
+    is_private = models.BooleanField(default=False)
+    password = models.CharField(max_length=128, blank=True, null=True)
     
     created_at = models.DateTimeField(auto_now_add=True)
 

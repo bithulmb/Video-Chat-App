@@ -9,6 +9,7 @@ from rest_framework import status
 from django.conf import settings
 import json
 from src import token04
+from django.contrib.auth.hashers import check_password
 
 User = get_user_model()
 class RoomListCreateView(generics.ListCreateAPIView):
@@ -23,6 +24,28 @@ class RoomDetailView(generics.RetrieveAPIView):
     queryset = Room.objects.all()
     serializer_class = RoomSerializer
     permission_classes = [permissions.IsAuthenticated]
+
+
+class RoomPasswordVerifyView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request, room_id):
+        try:
+            room = Room.objects.get(id=room_id)
+        except Room.DoesNotExist:
+            return Response({"error": "Room not found."}, status=status.HTTP_404_NOT_FOUND)
+
+        if not room.is_private:
+            return Response({"message": "This room is public and does not require a password."}, status=status.HTTP_200_OK)
+
+        password = request.data.get('password')
+        if not password:
+            return Response({"error": "Password is required."}, status=status.HTTP_400_BAD_REQUEST)
+
+        if check_password(password, room.password):
+            return Response({"message": "Password verified successfully."}, status=status.HTTP_200_OK)
+        else:
+            return Response({"error": "Incorrect password."}, status=status.HTTP_401_UNAUTHORIZED)
 
 
 class RoomMessagesList(generics.ListAPIView):
